@@ -87,6 +87,50 @@ const authController = {
         }
     },
 
+    async signIn(req:Request,res :Response){
+        const parsed = SignInSchema.safeParse(req.body);
+
+        if(!parsed.success){
+            return res.status(400).json({
+                success: false,
+                error: parsed.error.format(),
+            });
+        }
+
+        try {
+            const {email,password} = parsed.data;
+    
+            const user = await User.findOne({email});
+    
+            if(!user){
+                return res.status(401).json({
+                    success: false,
+                    error: "Invalid credentials",
+                });
+            }
+    
+            const isValid = bcryptConfig.compare(password,user.password);
+    
+            if(!isValid){
+                return res.status(403).json({
+                    success : false,
+                    error : "Invalid Credentials"
+                })
+            }
+    
+            const token = jwtConfig.sigin({userId : user._id.toString()});
+    
+            return res.status(200).json({
+                success : true,
+                data : {token}
+            })
+        } catch (error) {
+            return res.status(500).json({
+                success : false,
+                "error" : `Iternal server Error ${error}`
+            })
+        }
+    }
 }
 
 export {authController}
