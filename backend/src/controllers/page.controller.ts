@@ -115,6 +115,38 @@ const pageController = {
 
     // /pages =>  get
 
+    async getPages(req:Request,res:Response){
+        const userId = req.userId;
+
+        if (!userId) {
+            return res.status(401).json({ success: false, error: "Unauthorized" });
+        }
+
+        const pages = await Page.find({
+            userId
+        }).select("_id title text")
+
+        if(!pages){
+            return res.status(401).json({
+                success : false,
+                "error" : "Did not find the Content" 
+            })
+        }
+
+        const response = pageListResponseSchema.parse(
+            pages.map(p=>({
+                _id : p._id.toString(),
+                title : p.title,
+                text : p.text
+            }))
+        )
+
+        res.status(200).json({
+            success : true,
+            data : response
+        })
+    },
+
     // /pages/:id =>  get
 
 
