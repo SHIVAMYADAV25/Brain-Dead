@@ -50,7 +50,7 @@ const authController = {
     
             const userExist = await User.find({email})
     
-            if(userExist){
+            if(!userExist){
                 return res.status(400).json({
                     success: false,
                     error: "User already exists",
@@ -93,6 +93,7 @@ const authController = {
         if(!parsed.success){
             return res.status(400).json({
                 success: false,
+                "from" : "ZOD",
                 error: parsed.error.format(),
             });
         }
