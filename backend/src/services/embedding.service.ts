@@ -1,14 +1,7 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import "dotenv/config";
-
-if (!process.env.GEMINI_API_KEY) {
-  throw new Error("GEMINI_API_KEY is missing");
-}
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+import { geminiLLM } from "../utils/LLM.utils.js";
 
 export async function createEmbedding(text: string): Promise<number[]> {
-  const model = genAI.getGenerativeModel({
+  const model = geminiLLM.getGenerativeModel({
     model: "gemini-embedding-001",
   });
 
