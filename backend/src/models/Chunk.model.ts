@@ -1,7 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 
 const chunkSchema = new Schema({
-    useId : {
+    userId : {
         type: Schema.Types.ObjectId,
         ref: "User",
         required: true,
