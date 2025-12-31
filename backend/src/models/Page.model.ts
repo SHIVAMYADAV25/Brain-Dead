@@ -18,13 +18,7 @@ const pageSchema = new Schema(
     text: {
       type: String,
       required: true,
-    },
-
-    embedding: {
-      type: [Number],
-      required: true,
-      index: true,
-    },
+    }
   },
   { timestamps: { createdAt: true, updatedAt: false } }
 );

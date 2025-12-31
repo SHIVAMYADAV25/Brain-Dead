@@ -34,13 +34,7 @@ const contentSchema = new Schema(
     summary: {
       type: String,
       required: true,
-    },
-
-    embedding: {
-      type: [Number],
-      required: true,
-      index: true,
-    },
+    }
   },
   { timestamps: { createdAt: true, updatedAt: false } }
 );
