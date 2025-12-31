@@ -1,4 +1,4 @@
-import z from 'zod';
+import z, { success } from 'zod';
 import {Types} from "mongoose";
 import type { Request,Response } from 'express';
 import { detectType } from '../utils/detectType.utils.js';
@@ -42,7 +42,7 @@ export const contentController = {
     
             const extractedText = extractor;
     
-            const summariedData = `Artificial intelligence (AI) involves using computers to perform tasks that typically require human intelligence, such as processing visual information, understanding spoken language, and identifying patterns. AI systems rely on large datasets to enable algorithms to recognize patterns, make predictions, and suggest actions. While AI has made significant advancements, it currently cannot match the human brain's ability to handle a broader range of tasks and data.`
+            const summariedData = await createSummary(extractedText);
     
             const contentCreated = await Content.create({
                 userId,
@@ -98,4 +98,42 @@ export const contentController = {
     //         message : req.userId
     //     })
     // }
+
+    async getContent(req : Request,res:Response){
+        try {
+            const userId = new Types.ObjectId(req.userId);
+    
+            if (!userId) {
+                    return res.status(401).json({ success: false, error: "Unauthorized" });
+                }
+    
+            const content = await Content.findOne({
+                userId
+            })
+
+            if(!content){
+                return res.status(401).json({
+                    success : false,
+                    "error" : "Did not find the Content" 
+                })
+            }
+    
+            res.status(200).json({
+                success : true,
+                data : {
+                    "_id" : content._id,
+                    "title" : content.title,
+                    "summary" : content.summary,
+                    "type" : content.type,
+                    "URL" : content.sourceUrl
+                }
+            })
+        } catch (error){
+            console.error("Add content error:", error);
+            return res.status(401).json({
+                success : false,
+                "error" : error
+            })
+        }
+    }
 }
