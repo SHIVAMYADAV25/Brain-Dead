@@ -2,7 +2,7 @@
 export type URlType =  "youtube" | "website" | "pdf"
 
 
-export function detextType(url:string){
+export function detectType(url:string){
     try {
         const parsed = new URL(url);
         const hostName = parsed.hostname.toLocaleLowerCase();
