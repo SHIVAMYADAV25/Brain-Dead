@@ -1,38 +1,34 @@
-import type { NextFunction, Request, Response } from "express";
-import jwt from "jsonwebtoken";
+import type { Request, Response, NextFunction } from "express";
 import type { JwtPayload } from "jsonwebtoken";
 import { jwtConfig } from "../config/jwt.config.js";
 
-export const userMiddleware = (req: Request, res: Response, next: NextFunction) => {
+export const userMiddleware = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
-    const header = req.headers["authorization"];
-    if (!header || typeof header !== "string" || !header.startsWith("Bearer ")) {
-      return res.status(401).json({ message: "No token provided" });
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader?.startsWith("Bearer ")) {
+      return res.status(401).json({ message: "Authorization token missing" });
     }
 
-    const token = header.split(" ")[1];
-    // console.log(token)
+    const token = authHeader.split(" ")[1];
     if (!token) {
-      return res.status(401).json({ message: "No token provided" });
+      return res.status(401).json({ message: "Authorization token missing" });
     }
 
-    // Verify and narrow type
     const decoded = jwtConfig.verify(token);
+    // console.log(decoded);
 
-    if (typeof decoded === "string") {
+    if (typeof decoded !== "object" || !("userId" in decoded)) {
       return res.status(403).json({ message: "Invalid token" });
     }
 
-    // Expecting id claim on JWT; adjust if you use another claim name
-    const id = (decoded as JwtPayload & { id?: string }).id;
-    if (!id) {
-      return res.status(403).json({ message: "Token missing id claim" });
-    }
-
-    // req.userId exists if you've added the declaration (see types file)
-    (req as Request & { userId?: string }).userId = id;
+    req.userId = (decoded as JwtPayload & { userId: string }).userId;
     next();
-  } catch (err) {
+  } catch {
     return res.status(403).json({ message: "Invalid or expired token" });
   }
 };
