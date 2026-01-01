@@ -1,4 +1,4 @@
-import z, { success } from 'zod';
+import z from 'zod';
 import {Types} from "mongoose";
 import type { Request,Response } from 'express';
 import { detectType } from '../utils/detectType.utils.js';
