@@ -10,8 +10,10 @@ app.use(cors());
 import AuthRouter from "./routes/auth.route.js"
 import ContentRouter from "./routes/content.route.js";
 import { userMiddleware } from './middlewares/auth.middleware.js';
+import PageRouter from "./routes/page.route.js"
 
 app.use("/api/v1/user",AuthRouter);
-app.use("/ap1/v1/content",userMiddleware,ContentRouter);
+app.use("/api/v1/content",userMiddleware,ContentRouter);
+app.use("/api/v1/page",userMiddleware,PageRouter);
 
 export default app
