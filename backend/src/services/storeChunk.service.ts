@@ -2,15 +2,17 @@ import { createEmbedding } from "./embedding.service.js";
 import { splitIntoChunks } from "./chunkCreator.service.js";
 import { Chunk } from "../models/Chunk.model.js";
 import type { Types } from "mongoose";
+import type mongoose from "mongoose";
 
 interface chunkType {
     userId : Types.ObjectId,
     parentType: "content" | "page",
     parentId : Types.ObjectId,
     text: string,
+    session? : mongoose.ClientSession
 }
 
-export async function storeChunk({userId,parentId,parentType,text} : chunkType) {
+export async function storeChunk({userId,parentId,parentType,text,session} : chunkType) {
     const chunks = await splitIntoChunks(text);
 
     // creating embedding is async operation we need to run them parallely so aksath promise.all mai resolve hoga
@@ -36,7 +38,7 @@ export async function storeChunk({userId,parentId,parentType,text} : chunkType) 
         })
     )
 
-    console.log(chunkDocs);
+    console.log(chunkDocs,{session});
     
     await Chunk.insertMany(chunkDocs);
 }
