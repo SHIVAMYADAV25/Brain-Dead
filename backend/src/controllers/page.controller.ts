@@ -292,6 +292,62 @@ export const pageController = {
 
     },
 
+    // /pages/:id => delete
+
+    async deletePageById(req:Request,res:Response){
+        const session = await mongoose.startSession();
+        const parsed = pageIdParamSchema.safeParse(req.params);
+
+        if(!parsed.success){
+            return res.status(400).json({
+                    success: false,
+                    error: parsed.error.format(),
+                });
+        }
+
+        const { id } = parsed.data;
+        const userId = req.userId;
+     
+        if (!userId) {
+            return res.status(401).json({ success: false, error: "Unauthorized" });
+        }
+
+        try {
+            session.startTransaction();
+            const page = await Page.findOneAndDelete({
+                _id : id,
+                userId
+            },{session})
     
+            if(!page){
+                await session.abortTransaction();
+                return res.status(404).json({
+                    success: false,
+                    error: "Page not found"
+                })
+            }
+    
+            await Chunk.deleteMany({
+                parentType : "page",
+                parentId : page._id
+            },{session})
+    
+            await session.commitTransaction();
+
+            res.status(200).json({
+                success: true
+            });
+        } catch (error) {
+            await session.abortTransaction();
+            console.error("Delete page failed:", error);
+
+            res.status(500).json({
+                success: false,
+                error: "Failed to delete page"
+            });
+        } finally{
+            session.endSession();
+        }
+    }
     
 }
