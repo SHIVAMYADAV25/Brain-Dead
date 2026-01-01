@@ -187,6 +187,81 @@ export const projectController = {
        }
     },
 
-    
+    // /projects/:Id/add-content // post
+    async addContentToProjectById(req:Request,res:Response){
+        const paramParsed = IdParamSchema.safeParse(req.params)
+        const bodyParsed = addContentToProjectInputSchema.safeParse(req.body);
 
+        if(!paramParsed.success || !bodyParsed.success){
+            return res.status(400).json({
+                    success: false,
+                    error: paramParsed.error?.format() || bodyParsed.error?.format(),
+                });
+        }
+
+       try {
+        const { id } = paramParsed.data;
+        const {contentId} = bodyParsed.data;
+        const userId = req.userId;
+        const projectId = new Types.ObjectId(id)
+        const contentObjectId = new Types.ObjectId(contentId)
+    
+        if (!userId) {
+            return res.status(401).json({ success: false, error: "Unauthorized" });
+        }
+
+        const projectExist = await Project.findOne({
+            _id : projectId,
+            userId
+        });
+
+        if(!projectExist){
+        return res.status(404).json({
+            success: false,
+            error: "Project not found"
+        })
+        }
+
+        const contentExist = await Content.findOne({
+            _id : contentObjectId,
+            userId
+        })
+
+        if(!contentExist){
+            return res.status(404).json({
+                success : false,
+                error : "Content does not exist"
+            })
+        }
+
+        const alreadyPresent  = projectExist.contentIds.some(
+            id => id.toString() === contentObjectId.toString()
+        )
+
+        if(alreadyPresent){
+            return res.status(401).json({
+                success : false,
+                error : "Content already present"
+            })
+        }
+
+        projectExist.contentIds.push(contentObjectId);
+        await projectExist.save();
+ 
+        res.status(200).json({
+            success: true,
+            data: {
+                "message": "Content added to project"
+            }
+        })
+       } catch (error) {
+        console.error("getting project error:", error);
+            return res.status(500).json({
+                success : false,
+                "error" : "Server error"
+            })
+       }
+    },
+
+    
 }
