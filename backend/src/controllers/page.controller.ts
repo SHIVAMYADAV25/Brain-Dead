@@ -149,7 +149,7 @@ export const pageController = {
                 data : response
             })
         } catch (error) {
-            console.error("Add content error:", error);
+            console.error("Add Page error:", error);
             return res.status(401).json({
                 success : false,
                 "error" : error
@@ -200,7 +200,7 @@ export const pageController = {
              data : response
          })
        } catch (error) {
-        console.error("Add content error:", error);
+        console.error("getting error:", error);
             return res.status(401).json({
                 success : false,
                 "error" : "error on server side"
