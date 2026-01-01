@@ -157,5 +157,55 @@ export const pageController = {
         }
     },
 
-    
+    // /pages/:id =>  get
+
+    async getPagesById(req:Request,res:Response){
+        const parsed = pageIdParamSchema.safeParse(req.params)
+
+        if(!parsed.success){
+            return res.status(400).json({
+                    success: false,
+                    error: parsed.error.format(),
+                });
+        }
+
+       try {
+         const { id } = parsed.data;
+         const userId = req.userId;
+     
+         if (!userId) {
+             return res.status(401).json({ success: false, error: "Unauthorized" });
+         }
+ 
+         const page = await Page.findOne({
+             _id : id,
+             userId
+         })
+ 
+         if(!page){
+             return res.status(404).json({
+                 success: false,
+                 error: "Page not found"
+             })
+         }
+ 
+         const response = pageResponseSchema.parse({
+             _id : page._id.toString(),
+             title : page.title,
+             text : page.text
+         })
+ 
+         res.status(200).json({
+             success: true,
+             data : response
+         })
+       } catch (error) {
+        console.error("Add content error:", error);
+            return res.status(401).json({
+                success : false,
+                "error" : "error on server side"
+            })
+       }
+    },
+
 }
