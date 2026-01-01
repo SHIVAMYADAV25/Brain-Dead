@@ -208,4 +208,90 @@ export const pageController = {
        }
     },
 
+    
+    // /pages/:id  => patch
+    // to learn about session check this => https://chatgpt.com/s/t_69557a25a54881918d87ba10cea0081b
+    async editPageById(req:Request,res:Response){
+        const session = await mongoose.startSession();
+        const paramParsed = pageIdParamSchema.safeParse(req.params);
+        const bodyParsed = updatePageSchema.safeParse(req.body);
+        const userId = req.userId;
+
+        if(!paramParsed.success || !bodyParsed.success){
+            return res.status(400).json({
+                success: false,
+                error: paramParsed.error?.format() || bodyParsed.error?.format()
+            });
+        }
+
+        if(!userId){
+            return res.status(403).json({
+                success: false,
+                error: "Unauthorized"
+            });
+        }
+
+        const {id} = paramParsed.data;
+        const {title,text} = bodyParsed.data;
+
+        const updatePayload : Record<string,string> = {}
+
+        if(title !== undefined) updatePayload.title = title;
+        if(text !== undefined) updatePayload.text = text;
+
+        try {
+            session.startTransaction();
+            
+            const page = await Page.findOneAndUpdate(
+                {_id : id , userId}, //Finds only the Page owned by this user
+                updatePayload, // Updates only the provided fields
+                {new : true,session}  // Returns the updated Page
+            )
+    
+            if(!page){
+                await session.abortTransaction();
+                return res.status(404).json({
+                    success:false,
+                    error : "page not found"
+                })
+            }
+    
+            await Chunk.deleteMany({
+                parentType:"page",
+                parentId : page._id
+            },{session})
+    
+            await storeChunk({
+                    userId : new Types.ObjectId(userId),
+                    parentId : page._id,
+                    parentType : "page",
+                    text : page.text,
+                    session
+                })
+
+            await session.commitTransaction();
+    
+            res.status(200).json({
+                success : true,
+                data : {
+                    pageId : page._id.toString()
+                }
+            })
+        } catch (error) {
+            await session.abortTransaction();
+
+            console.error("Edit page failed:", error);
+
+            res.status(500).json({
+                success: false,
+                error: "Failed to update page"
+            });
+        }finally{
+            session.endSession();
+        }
+
+    },
+
+    
+    
 }
