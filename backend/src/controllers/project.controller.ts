@@ -263,5 +263,88 @@ export const projectController = {
        }
     },
 
+    // /projects/:id/add-page // POST
+
+    async addPageToProjectById(req:Request,res:Response){
+        const paramParsed = IdParamSchema.safeParse(req.params)
+        const bodyParsed = addPageToProjectInputSchema.safeParse(req.body);
+
+        if(!paramParsed.success || !bodyParsed.success){
+            return res.status(400).json({
+                    success: false,
+                    error: paramParsed.error?.format() || bodyParsed.error?.format(),
+                });
+        }
+
+        try {
+            const { id } = paramParsed.data;
+            const {pageId} = bodyParsed.data;
+            const userId = req.userId;
+            const projectId = new Types.ObjectId(id)
+            const pageObjectId = new Types.ObjectId(pageId);
     
+            if (!userId) {
+                return res.status(401).json({ success: false, error: "Unauthorized" });
+            }
+    
+            const projectExist = await Project.findOne({
+                _id : projectId,
+                userId
+            });
+    
+            if(!projectExist){
+            return res.status(404).json({
+                success: false,
+                error: "Project not found"
+            })
+            }
+    
+            const pageExist = await Page.findOne({
+                _id : pageObjectId,
+                userId
+            })
+    
+            if(!pageExist){
+                return res.status(404).json({
+                    success : false,
+                    error : "Page does not exist"
+                })
+            }
+    
+            const alreadyPresent  = projectExist.pageIds.some(
+                id => id.toString() === pageObjectId.toString()
+            )
+    
+            if(alreadyPresent){
+                return res.status(409).json({
+                    success : false,
+                    error : "Page already present"
+                })
+            }
+    
+            projectExist.pageIds.push(pageObjectId);
+            await projectExist.save();
+     
+            res.status(200).json({
+                success: true,
+                data: {
+                    "message": "Page added to project"
+                }
+            })
+        } catch (error) {
+            console.error("getting project error:", error);
+            return res.status(500).json({
+                success : false,
+                "error" : "Server error"
+            })
+        }
+    }
+
+    // /projects/:id/remove-content // Delete
+    
+
+    // /projects/:id/remove-page // Delete
+
+    // /projects/:Id //delete
+
 }
