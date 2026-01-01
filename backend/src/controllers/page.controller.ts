@@ -1,10 +1,12 @@
-import z, { success } from "zod";
-import {Types} from "mongoose";
-import { text, type Request,type Response } from 'express';
+import z from "zod";
+import mongoose, {Types} from "mongoose";
+import type {Request, Response} from 'express';
 import { Page } from "../models/Page.model.js";
 import { storeChunk } from "../services/storeChunk.service.js";
+import { Chunk } from "../models/Chunk.model.js";
+// https://chatgpt.com/share/69558250-98e0-800b-914a-eb5820eae62e
 
-export const createPageSchema = z.object({
+const createPageSchema = z.object({
   title: z
     .string()
     .min(1, "Title is required")
@@ -15,7 +17,7 @@ export const createPageSchema = z.object({
     .min(1, "Page text cannot be empty")
 })
 
-export const updatePageSchema = z
+const updatePageSchema = z
   .object({
     title: z
       .string()
@@ -36,17 +38,17 @@ export const updatePageSchema = z
   )
 
 
-export const pageIdParamSchema = z.object({
+const pageIdParamSchema = z.object({
   id: z.string().min(1, "Page ID is required")
 })
 
-export const pageResponseSchema = z.object({
+const pageResponseSchema = z.object({
   _id: z.string(),
   title: z.string(),
   text: z.string()
 })
 
-export const pageListResponseSchema = z.array(
+const pageListResponseSchema = z.array(
   pageResponseSchema.pick({
     _id: true,
     title: true,
@@ -57,7 +59,7 @@ export const pageListResponseSchema = z.array(
 
 
 
-const pageController = {
+export const pageController = {
     // /page =>  post
     async addPage(req:Request,res:Response){
 
@@ -113,44 +115,5 @@ const pageController = {
         }
     },
 
-    // /pages =>  get
-
-    async getPages(req:Request,res:Response){
-        const userId = req.userId;
-
-        if (!userId) {
-            return res.status(401).json({ success: false, error: "Unauthorized" });
-        }
-
-        const pages = await Page.find({
-            userId
-        }).select("_id title text")
-
-        if(!pages){
-            return res.status(401).json({
-                success : false,
-                "error" : "Did not find the Content" 
-            })
-        }
-
-        const response = pageListResponseSchema.parse(
-            pages.map(p=>({
-                _id : p._id.toString(),
-                title : p.title,
-                text : p.text
-            }))
-        )
-
-        res.status(200).json({
-            success : true,
-            data : response
-        })
-    },
-
-    // /pages/:id =>  get
-
-
-    // /pages/:id  => patch
-
-    // /pages/:id => delete
+    
 }
