@@ -20,7 +20,7 @@ const chatContextSchema = new Schema({
         required: true,
         index: true,
     },
-    scopeId: {
+    scopeIds: {
       type: [Schema.Types.ObjectId],
       required: true,
       default: [],
