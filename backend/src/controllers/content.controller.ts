@@ -107,11 +107,11 @@ export const contentController = {
                     return res.status(401).json({ success: false, error: "Unauthorized" });
                 }
     
-            const content = await Content.findOne({
+            const allContent = await Content.find({
                 userId
             })
 
-            if(!content){
+            if(!allContent){
                 return res.status(401).json({
                     success : false,
                     "error" : "Did not find the Content" 
@@ -120,13 +120,15 @@ export const contentController = {
     
             res.status(200).json({
                 success : true,
-                data : {
+                data : allContent.map((content) => (
+                    {
                     "_id" : content._id,
                     "title" : content.title,
                     "summary" : content.summary,
                     "type" : content.type,
                     "URL" : content.sourceUrl
                 }
+                ))
             })
         } catch (error){
             console.error("Add content error:", error);
