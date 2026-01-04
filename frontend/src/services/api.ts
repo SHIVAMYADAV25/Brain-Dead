@@ -17,3 +17,21 @@ api.interceptors.request.use((config) =>{
 
     return config
 })
+
+// Flow:
+//     Backend returns 401 Unauthorized
+//     Axios catches it
+//     Zustand logout() clears token
+//     User is redirected to /login
+
+api.interceptors.response.use(
+    (response) => response,
+    (error) =>{
+        if(error.response?.status === 401){
+            useAuthStore.getState().logout();
+            window.location.href = "/login";
+        }
+
+        return Promise.reject(error);
+    }
+);
