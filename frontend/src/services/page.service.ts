@@ -19,7 +19,7 @@ export async function createPage(payload:{title : string;text : string}){
 
 export async function updatePage(payload:{id:string,title?:string,text?:string}) {
     const {id, ...body} = payload;
-    const res = await api.patch(`/pages/${id}`,body);
+    const res = await api.patch(`/page/${id}`,body);
     return res.data
 }
 
