@@ -39,7 +39,7 @@ function Router() {
       element={<ProtectedRoute><EditPage /></ProtectedRoute>}
     />
 
-    /content
+    //content
     <Route
       path="/content"
       element={<ProtectedRoute><ContentList /></ProtectedRoute>}

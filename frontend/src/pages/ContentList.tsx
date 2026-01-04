@@ -6,11 +6,15 @@ function ContentList() {
   if (isLoading) return <p>Loading content…</p>;
   if (isError) return <p>Failed to load content</p>;
 
+  if (!data || data.length === 0) {
+    return <p>No content added yet.</p>;
+  }
+
   return (
     <div>
       <h2>Your Content</h2>
 
-      {data.map((item: any) => (
+      {data.map((item:any) => (
         <div key={item._id}>
           <h4>{item.title}</h4>
           <p>{item.summary}</p>

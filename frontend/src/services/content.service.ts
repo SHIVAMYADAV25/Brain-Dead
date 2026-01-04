@@ -9,11 +9,11 @@ export type content = {
 }
 
 export async function addContent(payload:{title:string,url:string}) {
-    const res = await api.post("/content",payload);
+    const res = await api.post("/content/add",payload);
     return res.data
 }
 
 export async function fetchContent() {
-    const res = await api.get("/content");
-    return res.data
+    const res = await api.get("/content/get");
+    return res.data.data
 }
