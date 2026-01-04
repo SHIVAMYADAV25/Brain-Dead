@@ -26,7 +26,7 @@ const chatInputSchema = z.object({
 );
 
 
-const ChatController = {
+export const ChatController = {
   // /chat/context
   async chatContext(req:Request,res:Response){ 
     // 1. Validate input using Zod
