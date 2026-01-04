@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { login } from "../services/auth.service";
+import { useAuthStore } from "../store/auth.store";
+
 
 function LoginPage() {
 
@@ -7,6 +9,9 @@ function LoginPage() {
   const [password,setPassword] = useState("");
   const [loading,setLoading] = useState(false);
   const [error,setError] = useState<string|null>(null);
+
+  //function
+  const setToken = useAuthStore((state) => state.setToken);
 
 
   async function handleSubmit(e:React.FormEvent) {
@@ -17,6 +22,8 @@ function LoginPage() {
     try{
       const data = await login({email,password});
 
+      // implemetes the token setting
+      setToken(data!.data.token);
       console.log("LOGIN SUCCESS: ", data);
       alert("Login successful (check console)");
     }catch(err:any){
