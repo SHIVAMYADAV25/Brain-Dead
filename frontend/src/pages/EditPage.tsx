@@ -1,24 +1,44 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useUpadtePage } from "../hooks/useUpdatePage";
+import { useNavigate, useParams } from "react-router-dom";
+import { usePage } from "../hooks/usePage";
 
-type props = {
-    pageId : string,
-    initialTitle : string,
-    initialText : string
-};
 
-function EditPage({pageId,initialText,initialTitle}:props){
-    const [title,setTitle] = useState(initialTitle);
-    const [text,setText] = useState(initialText);
+function EditPage(){
+    const {id} = useParams<{id:string}>();
+    const navigate = useNavigate();
 
+    const {data,isLoading} = usePage();
     const {mutate,isPending} = useUpadtePage();
 
+    const page = data?.find((p) => p._id === id) ;
+    const [title, setTitle] = useState("");
+    const [text, setText] = useState("");
+
+    useEffect(()=>{
+        
+        if(page){
+            setTitle(page.title)
+            setText(page.text)
+        }
+    },[page])
+
+    if (isLoading) return <p>Loading page...</p>;
+    if (!page) return <p>Page not found</p>;
+
     function handleSave(){
+        
         mutate({
-            id:pageId,
+            id:page!._id,
             title,
             text
-        });
+        },
+        {
+            onSuccess : () =>{
+                navigate("/pages");
+            }
+        }
+        )
     }
 
     return (
