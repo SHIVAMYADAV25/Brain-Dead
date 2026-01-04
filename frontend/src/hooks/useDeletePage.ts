@@ -1,13 +1,13 @@
 import { useMutation , useQueryClient } from "@tanstack/react-query";
-import { updatePage } from "../services/page.service";
+import { deletePage } from "../services/page.service";
 
-export function useUpadtePage(){
+export function useDeletePage(){
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn : updatePage,
+        mutationFn: deletePage,
 
-        onSuccess : () =>{
+        onSuccess:() => {
             queryClient.invalidateQueries({
                 queryKey : ["pages"],
             })

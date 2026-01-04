@@ -23,7 +23,12 @@ export async function updatePage(payload:{id:string,title?:string,text?:string})
     return res.data
 }
 
-// create page function
+export async function deletePage(id:string) {
+    const res = await api.delete(`/pages/${id}`);
+    return res.data
+}
+
+// create page route function
 // create hook
 // call it 
 // create UI
