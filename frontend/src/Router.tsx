@@ -4,6 +4,9 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Dashboard from "./pages/Dashboard";
 import PagesList from "./pages/PagesList";
 import CreatePage from "./pages/CreatePage";
+import EditPage from "./pages/EditPage";
+import AddContent from "./pages/AddContent";
+import ContentList from "./pages/ContentList";
 
 function Router() {
   return (
@@ -35,6 +38,34 @@ function Router() {
           </ProtectedRoute>
         }
         />
+
+        <Route 
+        path="/page/:id/edit"
+        element={
+          <ProtectedRoute>
+            <EditPage/>
+          </ProtectedRoute>
+        }
+        />
+
+        <Route 
+        path="/content/add"
+        element={
+          <ProtectedRoute>
+            <AddContent/>
+          </ProtectedRoute>
+        }
+        />
+
+        <Route 
+        path="/contents"
+        element={
+          <ProtectedRoute>
+            <ContentList/>
+          </ProtectedRoute>
+        }
+        />
+        
       </Routes>
     </BrowserRouter>
   );
