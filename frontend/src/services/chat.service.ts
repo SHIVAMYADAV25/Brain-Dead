@@ -13,6 +13,6 @@ export async function sendMessage(payload: {
   contextToken?: string;
   chatId?: string;
 }) {
-  const res = await api.post("/chat", payload);
+  const res = await api.post("/chat/", payload);
   return res.data.data; // { answer, chatId? }
 }

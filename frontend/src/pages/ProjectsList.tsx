@@ -13,7 +13,7 @@ function ProjectsList() {
       {data!.map((project) => (
         <div key={project._id}>
           <h4>{project.name}</h4>
-          <p>Pages: {project.pageIds.length}</p>
+          <p>Pages: {project.pageIds}</p>
           <p>Content: {project.contentIds.length}</p>
         </div>
       ))}

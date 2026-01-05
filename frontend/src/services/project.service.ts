@@ -8,12 +8,12 @@ export type Project = {
 };
 
 export async function fetchProjects():Promise<Project[]> {
-    const res = await api.get("/projects");
+    const res = await api.get("/project/projects");
     return res.data.data    
 }
 
 export async function createProject(payload:{name:string}) {
-    const res = await api.post('/pojects',payload);
+    const res = await api.post('/project/add',payload);
     return res.data.data
 }
 
@@ -22,7 +22,7 @@ export async function addPageToProject(payload: {
   pageId: string;
 }) {
   const res = await api.post(
-    `/projects/${payload.projectId}/add-page`,
+    `/project/projects/${payload.projectId}/add-page`,
     { pageId: payload.pageId }
   );
   return res.data;
@@ -34,7 +34,7 @@ export async function addContentToProject(payload: {
   contentId: string;
 }) {
   const res = await api.post(
-    `/projects/${payload.projectId}/add-content`,
+    `/project/projects/${payload.projectId}/add-content`,
     { contentId: payload.contentId }
   );
   return res.data;
