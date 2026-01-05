@@ -18,6 +18,6 @@ app.use("/api/v1/user",AuthRouter);
 app.use("/api/v1/content",userMiddleware,ContentRouter);
 app.use("/api/v1/page",userMiddleware,PageRouter);
 app.use("/api/v1/project",userMiddleware,projectRouter);
-app.use("/api/v1/chat",chatRouter);
+app.use("/api/v1/chat",userMiddleware,chatRouter);
 
 export default app
